@@ -2,6 +2,7 @@
 2025년도 동양미래대학교 웹응용소프트웨어공학과 4학년 졸업작품 프로젝트입니다.
 
 # 실행 체크 사항
+### 중요 !! Git Clone 하게 된다면 brench는 새로 생성해서 작업 진행해주세요.
 ### Flutter 설치하기 (Window 기준)
     1. [Flutter SDK DownLoad](https://docs.flutter.dev/release/archive)
     2. Stable channel에서 최신버전 다운로드
@@ -21,7 +22,7 @@
     자세한 내용은 문의바람 or 구글링을 통해 오류해결가능
 
 
-### 중요 !! Git Clone 하게 된다면 brench는 새로 생성해서 작업 진행해주세요.
+***
 
 # 플러터 환경 실행
     Ctrl + shift + p (명령 팔레트) = Flutter : Run Flutter Doctor
