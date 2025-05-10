@@ -3,7 +3,7 @@
 
 # 실행 체크 사항
 ### 중요 !! Git Clone 하게 된다면 brench는 새로 생성해서 작업 진행해주세요.
-### Flutter 설치하기 (Window 기준)
+### A. Flutter 설치하기 (Window 기준)
 1. [Flutter SDK DownLoad](https://docs.flutter.dev/release/archive)
 
 2. Stable channel에서 최신버전 다운로드
@@ -15,7 +15,7 @@
 5. 환경변수 -> 사용자 변수 -> 편집 -> 새로 만들기 -> C:\flutter\bin (찾아보기를 통해서 직접 지정 가능)
     
 
-### Android Studio 설치하기
+### B. Android Studio 설치하기
 1. [Android Studio IDE DownLoad](https://developer.android.com/studio?hl=ko)
 
 2. Plugins 에서 Flutter 설치
@@ -32,19 +32,22 @@
 자세한 내용은 문의바람 or 구글링을 통해 오류해결가능
 
 
+### C. Visual Studio 설치하기
+1. [Visual Studio IDE DownLoad](https://visualstudio.microsoft.com/ko/downloads/)
+
 ***
 
-# 플러터 환경 실행
+# 플러터 환경 실행 (Visual Studio Code 기준)
     Ctrl + shift + p (명령 팔레트) = Flutter : Run Flutter Doctor
     > 아래 그림과 같이 나오지않고 !표시가 나온다면 해당내용 해결하여주기
     > 해결이 어렵다면 문의바람
 ![성공화면](image.png)
 
-# 안드로이드 디바이스 실행
+# 안드로이드 디바이스 실행 (Visual Studio Code 기준)
     Ctrl + shift + p (명령 팔레트) = Flutter : Run Emulator
     > 클릭하게 된다면 Android Studio에서 설치한 Device를 선택가능
     > 처음 빌드하게된다면 조금 오래걸림
     > 계속 어두운 화면이 지속된다면 오른쪽 상단에 전원버튼 클릭
 
-# 프로젝트 실행
+# 프로젝트 실행 (Visual Studio Code 기준)
     Ctrl + F5 = 처음 빌드하게 된다면 조금 오래걸림
