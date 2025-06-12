@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'dart:convert'; // base64Decode
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -28,11 +28,17 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
         if (data is String) {
           try {
-            final decoded = base64Decode(data.trim());
+            final jsonMap = jsonDecode(data);
+            final base64Str = jsonMap['image'];
+            print("🔍 image 필드 시작 문자: ${base64Str[0]}");
+            print("🔍 image 필드 샘플: ${base64Str.substring(0, 30)}");
+
+            final decoded = base64Decode(base64Str);
+
             print("✅ base64 디코딩 성공 (decoded 길이: ${decoded.length})");
+
             setState(() {
               _imageData = decoded;
-              print("🟢 _imageData 설정 완료 (length: ${_imageData!.length})");
             });
           } catch (e) {
             print("❌ base64 디코딩 실패: $e");
