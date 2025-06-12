@@ -1,122 +1,335 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'ListPage/home_screen.dart';
+import 'ListPage/hospital_screen.dart';
+import 'ListPage/monitoring_screen.dart';
+import 'ListPage/video_screen.dart';
+import 'ListPage/mypage_screen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 
-void main() {
-  runApp(const MyApp());
+// 희주 추가
+import 'package:dangkong_app/screens/auth/login.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+//저장장
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   await NaverMapSdk.instance.initialize(
+//     clientId: 'e2yvr541f0',
+//     onAuthFailed: (e) {
+//       print('네이버맵 인증 실패: $e');
+//     },
+//   );
+
+//   runApp(ProviderScope(child: MyApp()));
+// }
+
+// class MyApp extends StatelessWidget {
+//   Future<bool> checkLoginStatus() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final userEmail = prefs.getString('userEmail');
+
+//     if (userEmail != null && userEmail.isNotEmpty) {
+//       print('로그인된 이메일: $userEmail'); // ✅ 콘솔 출력
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: FutureBuilder<bool>(
+//         future: checkLoginStatus(),
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Scaffold(
+//               body: Center(child: CircularProgressIndicator()),
+//             );
+//           } else if (snapshot.hasData && snapshot.data == true) {
+//             return BottomNavApp();
+//           } else {
+//             return LoginScreen();
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// class BottomNavApp extends StatefulWidget {
+//   @override
+//   _BottomNavAppState createState() => _BottomNavAppState();
+// }
+
+// class _BottomNavAppState extends State<BottomNavApp> {
+//   int _currentIndex = 0;
+
+//   final List<Widget> _pages = [
+//     HomeScreen(),
+//     HospitalScreen(),
+//     MonitoringScreen(),
+//     VideoScreen(),
+//     MypageScreen(),
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: _pages[_currentIndex],
+//       bottomNavigationBar: Container(
+//         height: 80,
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           border: Border(top: BorderSide(color: Colors.grey.shade300)),
+//         ),
+//         child: Padding(
+//           padding: EdgeInsets.symmetric(horizontal: 30),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               _buildNavItem(
+//                 'assets/images/home.png',
+//                 '홈',
+//                 0,
+//                 Color(0xFFA8D18D),
+//               ),
+//               _buildNavItem(
+//                 'assets/images/hospital.png',
+//                 '인근병원찾기',
+//                 1,
+//                 Color(0xFFF78C8C),
+//               ),
+//               _buildNavItem(
+//                 'assets/images/monitering.png',
+//                 '모니터링',
+//                 2,
+//                 Color(0xFF95BFE9),
+//               ),
+//               _buildNavItem(
+//                 'assets/images/video.png',
+//                 '영상 목록',
+//                 3,
+//                 Color(0xFFFFE38D),
+//               ),
+//               _buildNavItem(
+//                 'assets/images/mypage.png',
+//                 '마이페이지',
+//                 4,
+//                 Color(0xFFC4C4C4),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildNavItem(String iconPath, String label, int index, Color color) {
+//     final isSelected = _currentIndex == index;
+//     return GestureDetector(
+//       onTap: () {
+//         setState(() {
+//           _currentIndex = index;
+//         });
+//       },
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Image.asset(iconPath, width: 28, height: 28, color: color),
+//           SizedBox(height: 4),
+//           Text(
+//             label,
+//             style: TextStyle(
+//               fontSize: 11,
+//               color: Colors.black,
+//               fontWeight: FontWeight.w500,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+//fldjfdl
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ProviderScope(child: MyApp()));
+  KakaoSdk.init(nativeAppKey: '3009f310bc7b91b7ddc6c26636dbd41d');
+
+  //해시키
+  // Android 해시키 출력 (안드로이드에서만 작동)
+  String? keyHash = await getAndroidKeyHash();
+  print('Android KeyHash: $keyHash');
+}
+
+//해시키 땜에 추가가
+Future<String?> getAndroidKeyHash() async {
+  const platform = MethodChannel('com.example.app/keyhash');
+  try {
+    final String? keyHash = await platform.invokeMethod('getKeyHash');
+    return keyHash;
+  } on PlatformException catch (e) {
+    print('Failed to get key hash: ${e.message}');
+    return null;
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashRouter(),
+        '/login': (context) => LoginScreen(),
+        '/home': (context) => const BottomNavApp(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+// 로그인 여부 확인 후 라우팅하는 SplashRouter
+class SplashRouter extends StatelessWidget {
+  const SplashRouter({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+  Future<bool> checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userEmail = prefs.getString('userEmail');
+    if (userEmail != null && userEmail.isNotEmpty) {
+      print('로그인된 이메일: $userEmail'); // 콘솔 출력
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: checkLoginStatus(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else {
+          if (snapshot.hasData && snapshot.data == true) {
+            // 로그인 되어있으면 홈으로 이동
+            Future.microtask(
+              () => Navigator.pushReplacementNamed(context, '/home'),
+            );
+          } else {
+            // 로그인 안되어있으면 로그인 화면으로 이동
+            Future.microtask(
+              () => Navigator.pushReplacementNamed(context, '/login'),
+            );
+          }
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class BottomNavApp extends StatefulWidget {
+  const BottomNavApp({super.key});
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  @override
+  _BottomNavAppState createState() => _BottomNavAppState();
+}
+
+class _BottomNavAppState extends State<BottomNavApp> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    HomeScreen(),
+    HospitalScreen(),
+    MonitoringScreen(),
+    VideoScreen(),
+    MypageScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      body: _pages[_currentIndex],
+      bottomNavigationBar: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildNavItem(
+                'assets/images/home.png',
+                '홈',
+                0,
+                const Color(0xFFA8D18D),
+              ),
+              _buildNavItem(
+                'assets/images/hospital.png',
+                '인근병원찾기',
+                1,
+                const Color(0xFFF78C8C),
+              ),
+              _buildNavItem(
+                'assets/images/monitering.png',
+                '모니터링',
+                2,
+                const Color(0xFF95BFE9),
+              ),
+              _buildNavItem(
+                'assets/images/video.png',
+                '영상 목록',
+                3,
+                const Color(0xFFFFE38D),
+              ),
+              _buildNavItem(
+                'assets/images/mypage.png',
+                '마이페이지',
+                4,
+                const Color(0xFFC4C4C4),
+              ),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildNavItem(String iconPath, String label, int index, Color color) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(iconPath, width: 28, height: 28, color: color),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
