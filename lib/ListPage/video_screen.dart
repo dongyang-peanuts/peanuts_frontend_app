@@ -14,30 +14,68 @@ class _VideoScreenState extends State<VideoScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedFilter = '전체보기';
   String _searchQuery = '';
-  bool _isEditMode = false; // 편집 모드 상태 추가
-  Set<int> _selectedItems = Set<int>(); // 선택된 아이템들
-  Map<String, String> _thumbnailCache = {}; // 썸네일 캐시
+  bool _isEditMode = false;
+  Set<int> _selectedItems = Set<int>();
+  Map<String, String> _thumbnailCache = {};
 
   // 샘플 데이터
   final List<VideoItem> _videos = [
     VideoItem(
-      title: '낙상감지',
+      title: '낙상감지 1',
       date: '2024.04.14 07:30',
       thumbnail: 'assets/images/video_thumbnail.jpg',
       videoUrl: 'assets/images/testvideo.mp4',
       isBookmarked: true,
       category: '낙상',
     ),
+
     VideoItem(
-      title: '사용자 녹화 영상',
+      title: '사용자 녹화 영상 1',
       date: '2024.04.14 07:30',
       thumbnail: 'assets/images/video_thumbnail.jpg',
       videoUrl: 'assets/images/testvideo.mp4',
       isBookmarked: false,
       category: '개인녹화',
     ),
+
     VideoItem(
-      title: '움직임 없음',
+      title: '움직임 없음 1',
+      date: '2024.04.14 07:30',
+      thumbnail: 'assets/images/video_thumbnail.jpg',
+      videoUrl: 'assets/images/testvideo.mp4',
+      isBookmarked: false,
+      category: '움직임 없음',
+    ),
+
+    VideoItem(
+      title: '사용자 녹화 영상 2',
+      date: '2024.04.14 07:30',
+      thumbnail: 'assets/images/video_thumbnail.jpg',
+      videoUrl: 'assets/images/testvideo.mp4',
+      isBookmarked: false,
+      category: '개인녹화',
+    ),
+
+    VideoItem(
+      title: '낙상 감지 2',
+      date: '2024.04.14 07:30',
+      thumbnail: 'assets/images/video_thumbnail.jpg',
+      videoUrl: 'assets/images/testvideo.mp4',
+      isBookmarked: false,
+      category: '낙상',
+    ),
+
+    VideoItem(
+      title: '개인 녹화 3',
+      date: '2024.04.14 07:30',
+      thumbnail: 'assets/images/video_thumbnail.jpg',
+      videoUrl: 'assets/images/testvideo.mp4',
+      isBookmarked: false,
+      category: '개인녹화',
+    ),
+
+    VideoItem(
+      title: '움직임 없음2',
       date: '2024.04.14 07:30',
       thumbnail: 'assets/images/video_thumbnail.jpg',
       videoUrl: 'assets/images/testvideo.mp4',

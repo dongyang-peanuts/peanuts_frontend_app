@@ -43,7 +43,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
 
   void _onFocusChanged() {
     if (!_addressFocusNode.hasFocus) {
-      // 포커스를 잃었을 때 검색 결과 숨김 (약간의 지연을 두어 선택할 시간을 줌)
       Future.delayed(const Duration(milliseconds: 200), () {
         if (mounted) {
           setState(() {
@@ -132,7 +131,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
       _showResults = false;
     });
 
-    // 포커스를 상세주소 입력창으로 이동
     FocusScope.of(context).nextFocus();
   }
 
@@ -150,18 +148,15 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
       return;
     }
 
-    // 상세주소가 있으면 풀 주소와 합치기
     final completeAddress =
         detailAddress.isNotEmpty ? '$fullAddress $detailAddress' : fullAddress;
 
-    // Riverpod으로 주소 데이터 저장
     ref
         .read(signupProvider.notifier)
         .updateStep3Data(userAddr: completeAddress);
 
     widget.onAddressSelected?.call(fullAddress, detailAddress);
 
-    // 다음 단계로 이동
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignupStep4()),
@@ -180,15 +175,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              // child: Text(
-              //   '3/4',
-              //   style: TextStyle(color: Colors.grey[600], fontSize: 16),
-              // ),
-            ),
-          ),
+          Padding(padding: const EdgeInsets.only(right: 16.0), child: Center()),
         ],
       ),
       backgroundColor: Colors.white,
@@ -210,14 +197,12 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                   ),
                   const SizedBox(height: 40),
 
-                  // 주소 검색 섹션
                   const Text(
                     '주소',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 12),
 
-                  // 주소 입력 필드
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey[300]!),
@@ -251,7 +236,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                     ),
                   ),
 
-                  // 검색 결과 리스트
                   if (_showResults && _searchResults.isNotEmpty)
                     Expanded(
                       child: Container(
@@ -290,7 +274,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                       ),
                     ),
 
-                  // 상세주소 입력 (주소가 선택된 경우에만 표시)
                   if (_selectedAddress.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
@@ -325,7 +308,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
             ),
           ),
 
-          // 다음 버튼
           Container(
             height: buttonHeight,
             width: double.infinity,

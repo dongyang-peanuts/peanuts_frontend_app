@@ -33,7 +33,6 @@ class _SignupStep5State extends ConsumerState<SignupStep5> {
   @override
   void initState() {
     super.initState();
-    // 기존에 저장된 데이터가 있다면 불러오기
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final signupData = ref.read(signupProvider);
       if (signupData.paDi != null) {
@@ -81,33 +80,6 @@ class _SignupStep5State extends ConsumerState<SignupStep5> {
     );
   }
 
-  // Widget _buildDropdown(
-  //   String label,
-  //   List<String> options,
-  //   String? value,
-  //   void Function(String?) onChanged,
-  // ) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-
-  //     child: DropdownButtonFormField<String>(
-  //       value: value,
-  //       onChanged: onChanged,
-  //       decoration: InputDecoration(
-  //         labelText: label,
-  //         border: const UnderlineInputBorder(),
-  //       ),
-  //       items:
-  //           options
-  //               .map(
-  //                 (option) =>
-  //                     DropdownMenuItem(value: option, child: Text(option)),
-  //               )
-  //               .toList(),
-  //     ),
-  //   );
-  // }
-
   Widget _buildDropdown(
     String label,
     List<String> options,
@@ -117,9 +89,9 @@ class _SignupStep5State extends ConsumerState<SignupStep5> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       child: Container(
-        width: 350, // ✅ 원하는 너비로 지정
+        width: 350,
         child: DropdownButtonFormField<String>(
-          isExpanded: true, // ✅ 버튼과 목록 모두 너비 맞춤
+          isExpanded: true,
           value: value,
           onChanged: onChanged,
           decoration: InputDecoration(

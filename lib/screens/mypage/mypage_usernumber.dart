@@ -11,7 +11,7 @@ class MypageUserNumber extends StatefulWidget {
 class _MypageUserNumberState extends State<MypageUserNumber> {
   final TextEditingController _newNumberController = TextEditingController();
 
-  // 현재 연결된 전화번호는 예시로 고정값 사용
+  // 현재 연결된 전화번호는 예시로 고정값 사용!!
   final String currentNumber = '010-1234-5678';
 
   @override

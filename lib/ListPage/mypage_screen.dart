@@ -79,10 +79,7 @@ class _MypageScreenState extends State<MypageScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // const Text(
-                    //   '비밀번호변경',
-                    //   style: TextStyle(fontSize: 12, color: Colors.grey),
-                    // ),
+
                     GestureDetector(
                       onTap: () {
                         Navigator.push(

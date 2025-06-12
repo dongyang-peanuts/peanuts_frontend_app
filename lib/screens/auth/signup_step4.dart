@@ -23,7 +23,6 @@ class _SignupStep4State extends ConsumerState<SignupStep4> {
   @override
   void initState() {
     super.initState();
-    // 기존에 저장된 데이터가 있다면 불러오기
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final signupData = ref.read(signupProvider);
       if (signupData.paAge != null) {
@@ -45,7 +44,6 @@ class _SignupStep4State extends ConsumerState<SignupStep4> {
   }
 
   void _saveStep4Data() {
-    // 입력된 데이터를 provider에 저장
     ref
         .read(signupProvider.notifier)
         .updateStep4Data(
