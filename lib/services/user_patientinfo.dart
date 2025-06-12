@@ -8,7 +8,7 @@ Future<List<Patient>> getPatients() async {
   final userKey = prefs.getInt('userKey');
 
   if (userKey == null) {
-    print('❌ userKey가 없습니다.');
+    print(' userKey가 없습니다.');
     return [];
   }
 
@@ -21,11 +21,11 @@ Future<List<Patient>> getPatients() async {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((e) => Patient.fromJson(e)).toList();
     } else {
-      print('❌ 환자 정보 조회 실패: ${response.statusCode} / ${response.body}');
+      print(' 환자 정보 조회 실패: ${response.statusCode} / ${response.body}');
       return [];
     }
   } catch (e) {
-    print('❌ 네트워크 오류: $e');
+    print(' 네트워크 오류: $e');
     return [];
   }
 }

@@ -19,7 +19,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.initState();
     _controller = VideoPlayerController.asset(widget.videoUrl)
       ..initialize().then((_) {
-        setState(() {}); // 초기화 후 UI 갱신
+        setState(() {});
         _controller.play();
       });
   }

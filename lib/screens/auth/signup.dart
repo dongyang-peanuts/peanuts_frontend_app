@@ -1,128 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:dangkong_app/screens/auth/signup_step1.dart';
-
-// class SignupScreen extends StatelessWidget {
-//   const SignupScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final _ = MediaQuery.of(context).size.height;
-
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(centerTitle: true, title: const Text('회원가입')),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-//           child: Column(
-//             children: [
-//               SizedBox(height: 80),
-
-//               // 로고 이미지
-//               Image.asset('assets/images/logo.png', width: 150, height: 150),
-
-//               // 안내 문구
-//               const Text(
-//                 '땅콩에 오신 것을 환영합니다!',
-//                 style: TextStyle(fontSize: 13, color: Colors.grey),
-//               ),
-
-//               const Text(
-//                 '서비스를 사용하기 위해 회원가입이 필요합니다.',
-//                 style: TextStyle(fontSize: 13, color: Colors.grey),
-//               ),
-//               const SizedBox(height: 32),
-
-//               // 이메일 아이디로 회원가입 버튼
-//               SizedBox(
-//                 width: 372,
-//                 height: 50,
-//                 child: ElevatedButton.icon(
-//                   icon: Image.asset(
-//                     'assets/images/emailicon.png',
-//                     width: 24,
-//                     height: 24,
-//                   ),
-//                   label: const Text('이메일 아이디로 회원가입하기'),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: const Color(0xFF99BC85),
-//                     foregroundColor: Colors.white,
-//                     textStyle: const TextStyle(fontSize: 14),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(
-//                         builder: (context) => const SignupStep1(),
-//                       ),
-//                     );
-//                   },
-//                 ),
-//               ),
-//               const SizedBox(height: 16),
-
-//               // 구글 계정으로 회원가입 버튼
-//               SizedBox(
-//                 width: 372,
-//                 height: 50,
-//                 child: ElevatedButton.icon(
-//                   icon: Image.asset(
-//                     'assets/images/googleicon.png',
-//                     width: 24,
-//                     height: 24,
-//                   ),
-//                   label: const Text('구글 계정으로 회원가입하기'),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: const Color(0xFFF5F5F5),
-//                     foregroundColor: Colors.black,
-//                     textStyle: const TextStyle(fontSize: 14),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     // 구글 로그인 로직
-//                   },
-//                 ),
-//               ),
-//               const SizedBox(height: 16),
-
-//               // 카카오 계정으로 회원가입 버튼
-//               SizedBox(
-//                 width: 372,
-//                 height: 50,
-//                 child: ElevatedButton.icon(
-//                   icon: Image.asset(
-//                     'assets/images/kakaoicon.png',
-//                     width: 24,
-//                     height: 24,
-//                   ),
-//                   label: const Text('카카오 계정으로 회원가입하기'),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: const Color(0xFFFEE404),
-//                     foregroundColor: Colors.black,
-//                     textStyle: const TextStyle(fontSize: 14),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     // 카카오 로그인 로직
-//                   },
-//                 ),
-//               ),
-//               const SizedBox(height: 32),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:dangkong_app/screens/auth/signup_step1.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -228,7 +103,6 @@ class SignupScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // 이메일 회원가입 버튼
               SizedBox(
                 width: 372,
                 height: 50,
@@ -259,7 +133,7 @@ class SignupScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // 구글 회원가입 버튼 (구현 필요)
+              // 구글 회원가입 버튼
               SizedBox(
                 width: 372,
                 height: 50,

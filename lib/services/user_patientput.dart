@@ -8,7 +8,7 @@ Future<bool> updatePatientInfo(Patient patient) async {
   final userKey = prefs.getInt('userKey');
 
   if (userKey == null) {
-    print('❌ userKey가 없습니다.');
+    print(' userKey가 없습니다.');
     return false;
   }
 

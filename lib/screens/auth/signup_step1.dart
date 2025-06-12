@@ -68,8 +68,6 @@ class _SignupStep1State extends State<SignupStep1> {
 
             const SizedBox(height: 40),
 
-            // 전체 동의 (네모 체크박스)
-            // 기존 CheckboxListTile 제거 후 아래 코드로 대체
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: Row(
@@ -95,7 +93,7 @@ class _SignupStep1State extends State<SignupStep1> {
 
             const SizedBox(height: 16),
 
-            // 개별 약관 체크 (회색/초록 체크박스)
+            // 개별 약관 체크
             _buildCheck(0, '[필수] 개인정보 취급방침'),
             _buildCheck(1, '[필수] 사용자 이용약관'),
             _buildCheck(2, '[필수] 위치정보 서비스 이용약관'),
@@ -116,8 +114,8 @@ class _SignupStep1State extends State<SignupStep1> {
             const Spacer(),
 
             SizedBox(
-              width: screenWidth, // 전체 가로 채움
-              height: buttonHeight, // 비율 유지
+              width: screenWidth,
+              height: buttonHeight,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -152,9 +150,9 @@ class _SignupStep1State extends State<SignupStep1> {
       side: BorderSide(
         color: _agreements[index] ? const Color(0xFF99BC85) : Colors.grey,
       ),
-      contentPadding: EdgeInsets.zero, // 좌우 여백 제거
-      visualDensity: VisualDensity.compact, // 위아래 여백 줄임
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, // 터치 영역 최소화
+      contentPadding: EdgeInsets.zero,
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       title: Text(text),
     );
   }

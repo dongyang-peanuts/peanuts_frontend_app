@@ -26,7 +26,7 @@ class _SignupStep2State extends ConsumerState<SignupStep2> {
   @override
   void initState() {
     super.initState();
-    // 기존에 저장된 데이터가 있다면 컨트롤러에 설정
+
     final signupData = ref.read(signupProvider);
     _emailController.text = signupData.userEmail ?? '';
     _passwordController.text = signupData.userPwd ?? '';
@@ -49,7 +49,6 @@ class _SignupStep2State extends ConsumerState<SignupStep2> {
   }
 
   void _onSubmit() {
-    // 입력 검증
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -87,7 +86,6 @@ class _SignupStep2State extends ConsumerState<SignupStep2> {
           userNumber: _emergencyContactController.text,
         );
 
-    // 다음 페이지로 이동
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignupStep3()),

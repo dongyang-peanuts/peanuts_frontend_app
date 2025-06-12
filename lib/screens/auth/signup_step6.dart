@@ -34,17 +34,17 @@ class _SignupStep6State extends ConsumerState<SignupStep6> {
     print('');
 
     // Step별 데이터 상세 출력
-    print('📧 Step2 데이터 (사용자 기본정보):');
+    print(' Step2 데이터 (사용자 기본정보):');
     print('  - 이메일 (userEmail): ${signupData.userEmail ?? "NULL"}');
     print('  - 비밀번호 (userPwd): ${signupData.userPwd ?? "NULL"}');
     print('  - 비상연락망 (userNumber): ${signupData.userNumber ?? "NULL"}');
     print('');
 
-    print('🏠 Step3 데이터 (주소정보):');
+    print('Step3 데이터 (주소정보):');
     print('  - 주소 (userAddr): ${signupData.userAddr ?? "NULL"}');
     print('');
 
-    print('👤 Step4 데이터 (환자 신체정보):');
+    print(' Step4 데이터 (환자 신체정보):');
     print('  - 환자 나이 (paAge): ${signupData.paAge ?? "NULL"}');
     print('  - 키 (paHei): ${signupData.paHei ?? "NULL"}');
     print('  - 체중 (paWei): ${signupData.paWei ?? "NULL"}');
@@ -52,7 +52,7 @@ class _SignupStep6State extends ConsumerState<SignupStep6> {
     print('  - 욕창횟수 (paPrct): ${signupData.paPrct ?? "NULL"}');
     print('');
 
-    print('🏥 Step5 데이터 (환자 의료정보):');
+    print('Step5 데이터 (환자 의료정보):');
     print('  - 질병 (paDi): ${signupData.paDi ?? "NULL"}');
     print('  - 질병의중증도 (paDise): ${signupData.paDise ?? "NULL"}');
     print('  - 운동시간 (paExti): ${signupData.paExti ?? "NULL"}');
@@ -79,11 +79,11 @@ class _SignupStep6State extends ConsumerState<SignupStep6> {
     }
     print('');
 
-    print('💾 사용자 입력 데이터 수집 완료! 위의 모든 정보가 사용자가 입력한 데이터입니다.');
+    print('사용자 입력 데이터 수집 완료! 위의 모든 정보가 사용자가 입력한 데이터입니다.');
     print('');
 
     try {
-      print('🚀 API 전송 시도 중...');
+      print(' API 전송 시도 중...');
 
       // 회원가입 API 호출
       final success = await ref.read(signupProvider.notifier).submitSignup();

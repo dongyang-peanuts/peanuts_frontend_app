@@ -17,7 +17,7 @@ Future<bool> newUserNumber(UserNumber userNumber) async {
   final userKey = prefs.getInt('userKey');
 
   if (userKey == null) {
-    print('❌ userKey가 존재하지 않습니다. 로그인 상태를 확인하세요.');
+    print(' userKey가 존재하지 않습니다. 로그인 상태를 확인하세요.');
     return false;
   }
 
