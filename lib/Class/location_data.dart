@@ -1,3 +1,5 @@
+// location_data.dart
+import 'dart:math';
 const List<String> cities = [
   '서울', '대전', '대구', '부산', '인천', '울산', '광주','세종','경기도','강원도','충청북도','충청남도','전라북도','전라남도','경상남도','경상북도','제주도'
 ];
@@ -21,3 +23,28 @@ const Map<String, List<String>> boroughs = {
   '경상남도': ['창원시','진주시','통영시','사천시','김해시','밀양시','거제시','양산시','의령군','함안군','창녕군','고성군','남해군','하동군','산청군','함양군','거창군','합천군'],
   '제주도': ['제주시','서귀포시']
 };
+String getCityFromAddress(String address) {
+  for (final city in cities) {
+    if (address.contains(city)) return city;
+  }
+  for (final entry in boroughs.entries) {
+    for (final borough in entry.value) {
+      if (address.contains(borough)) return entry.key;
+    }
+  }
+  return '';
+}
+
+String getBoroughFromAddress(String city, String address) {
+  final boroughList = boroughs[city] ?? [];
+  for (final borough in boroughList) {
+    if (address.contains(borough)) return borough;
+  }
+  return '';
+}
+
+Map<String, String> getCityAndBoroughFromAddress(String address) {
+  final city = getCityFromAddress(address);
+  final borough = getBoroughFromAddress(city, address);
+  return {'city': city, 'borough': borough};
+}

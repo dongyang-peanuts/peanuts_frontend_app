@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -8,93 +7,88 @@ class MarkerInfo {
   final NLatLng position;
   final String address;
   final String infoWindowText;
+  final String phone;
+  final String category;
+
+  late NMarker marker; // 마커 저장
+  bool isSelected = false;
 
   MarkerInfo({
     required this.id,
     required this.position,
     required this.address,
     required this.infoWindowText,
+    required this.phone,
+    required this.category,
   });
 
-  NMarker toNMarker() {
-    return NMarker(
+  NMarker toNMarker(void Function(String) onTapMarker) {
+    marker = NMarker(
       id: id,
       position: position,
       size: NSize(30, 30),
-      icon: NOverlayImage.fromAssetImage('assets/images/medicine.png'),
+      icon: NOverlayImage.fromAssetImage(
+        isSelected
+            ? 'assets/images/medicine_selected.png'
+            : 'assets/images/medicine.png',
+      ),
+    );
+
+    marker.setOnTapListener((_) {
+      onTapMarker(id);
+    });
+
+    return marker;
+  }
+
+  void setSelected(bool selected) {
+    isSelected = selected;
+
+    marker.setIcon(NOverlayImage.fromAssetImage(
+      selected
+          ? 'assets/images/medicine_selected.png'
+          : 'assets/images/medicine.png',
+    ));
+
+    marker.setSize(
+      selected ? NSize(50, 60) : NSize(30, 30), // ✅ 클릭되면 50x50으로 확대
     );
   }
 
-  static double convertToDecimal(double rawCoordinate) {
-    return rawCoordinate / 10000000.0;
-  }
 
-  static String stripHtmlTags(String html) {
-    final RegExp exp = RegExp(r'<[^>]*>');
-    return html.replaceAll(exp, '');
-  }
+  static Future<List<MarkerInfo>> fetchMarkersFromKakao(
+      String query,
+      double userLat,
+      double userLng,
+      ) async {
+    final apiKey = 'd995bf6fbf5dd156e87868720ada7ed4';
+    final encodedQuery = Uri.encodeComponent(query);
+    final url =
+        'https://dapi.kakao.com/v2/local/search/keyword.json?query=$encodedQuery&x=$userLng&y=$userLat&radius=3000';
 
-  static Future<List<MarkerInfo>> fetchMarkersFromNaver(String query) async {
-    final apiKey = 'Wy_IbBpAVX1M1HSZPIXP'; // Naver API Key 입력
-    final secretKey = '9nhy7rF28p'; // Naver Client Secret 입력
-    final encodedQuery = Uri.encodeComponent('$query 종합병원');
-    List<MarkerInfo> allMarkers = [];
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'KakaoAK $apiKey'},
+    );
 
-    for (int start = 1; start <= 100; start += 50) {
-      final url =
-          "https://openapi.naver.com/v1/search/local.json?query=$encodedQuery&display=50&start=$start";
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'X-Naver-Client-Id': apiKey,
-          'X-Naver-Client-Secret': secretKey,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final items = data['items'] as List;
-
-        if (items.isEmpty) break;
-
-        allMarkers.addAll(items.map((item) {
-          final mapx = item['mapx'] as String?;
-          final mapy = item['mapy'] as String?;
-          final title = item['title'] as String? ?? '';
-
-          double latitude = 0.0;
-          double longitude = 0.0;
-
-          if (mapx != null && mapy != null) {
-            longitude =
-                MarkerInfo.convertToDecimal(double.tryParse(mapx) ?? 0.0);
-            latitude =
-                MarkerInfo.convertToDecimal(double.tryParse(mapy) ?? 0.0);
-          }
-
-          return MarkerInfo(
-            id: MarkerInfo.stripHtmlTags(title),
-            position: NLatLng(latitude, longitude),
-            address: item['address'] ?? '',
-            infoWindowText: MarkerInfo.stripHtmlTags(title),
-          );
-        }));
-      } else {
-        throw Exception('API 오류 발생: ${response.statusCode}');
-      }
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List documents = data['documents'];
+      return documents.map((item) {
+        return MarkerInfo(
+          id: item['id'],
+          position: NLatLng(
+            double.parse(item['y']),
+            double.parse(item['x']),
+          ),
+          address: item['road_address_name'] ?? item['address_name'] ?? '',
+          infoWindowText: item['place_name'],
+          phone: item['phone'] ?? '',
+          category: item['category_group_name'] ?? '',
+        );
+      }).toList();
+    } else {
+      throw Exception('카카오 API 오류: ${response.body}');
     }
-
-    return allMarkers;
-  }
-}
-
-Future<List<MarkerInfo>> getMarkers(String city, String borough) async {
-  try {
-    final query = '$city $borough'; // 예: 서울 강남구
-    return await MarkerInfo.fetchMarkersFromNaver(query);
-  } catch (e) {
-    print('오류 발생: $e');
-    return [];
   }
 }
