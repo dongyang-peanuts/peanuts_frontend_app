@@ -153,11 +153,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() {
                           _loginFailed = false;
                         });
-                        Navigator.pushReplacement(
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => BottomNavApp(),
+                        //   ),
+                        // );
+                        Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => BottomNavApp(),
-                          ),
+                          MaterialPageRoute(builder: (_) => BottomNavApp()),
+                          (route) => false, // 모든 이전 화면 제거
                         );
                       } else {
                         setState(() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dangkong_app/services/user_address.dart';
 
@@ -35,15 +34,14 @@ class _MypageAddressState extends State<MypageAddress> {
   bool _isSearching = false;
   bool _showResults = false;
   String _selectedAddress = '';
-
-  int? _userKey; // userKey 변수 추가
+  int? _userKey;
 
   @override
   void initState() {
     super.initState();
     _addressController.addListener(_onAddressChanged);
     _addressFocusNode.addListener(_onFocusChanged);
-    _loadUserKey(); // userKey 불러오기 호출
+    _loadUserKey();
   }
 
   Future<void> _loadUserKey() async {
@@ -83,7 +81,6 @@ class _MypageAddressState extends State<MypageAddress> {
       });
       return;
     }
-
     if (query.length >= 2) {
       _searchAddress(query);
     }
@@ -100,32 +97,35 @@ class _MypageAddressState extends State<MypageAddress> {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://dapi.kakao.com/v2/local/search/keyword.json?query=$query',
+          'https://dapi.kakao.com/v2/local/search/address.json?query=${Uri.encodeQueryComponent(query)}',
         ),
-        headers: {
-          'Authorization': 'KakaoAK 43c5bbef9d62c3193c7287eeae4d2e3e', // API 키
-        },
+        headers: {'Authorization': 'KakaoAK 43c5bbef9d62c3193c7287eeae4d2e3e'},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> documents = data['documents'] ?? [];
 
-        setState(() {
-          _searchResults =
-              documents.map((doc) {
-                final roadAddr = doc['road_address_name'] ?? '';
-                final jibunAddr = doc['address_name'] ?? '';
-                final x = double.tryParse(doc['x'] ?? '0') ?? 0.0;
-                final y = double.tryParse(doc['y'] ?? '0') ?? 0.0;
+        // 중복 제거 (좌표 기준)
+        final uniqueResults = <String, AddressResult>{};
+        for (var doc in documents) {
+          final roadAddr = doc['road_address']?['address_name'] ?? '';
+          final jibunAddr = doc['address_name'] ?? '';
+          final x = doc['x'];
+          final y = doc['y'];
+          final key = '$x,$y';
+          if (!uniqueResults.containsKey(key)) {
+            uniqueResults[key] = AddressResult(
+              roadAddress: roadAddr.isNotEmpty ? roadAddr : jibunAddr,
+              jibunAddress: jibunAddr,
+              x: double.tryParse(x ?? '0') ?? 0.0,
+              y: double.tryParse(y ?? '0') ?? 0.0,
+            );
+          }
+        }
 
-                return AddressResult(
-                  roadAddress: roadAddr.isNotEmpty ? roadAddr : jibunAddr,
-                  jibunAddress: jibunAddr,
-                  x: x,
-                  y: y,
-                );
-              }).toList();
+        setState(() {
+          _searchResults = uniqueResults.values.toList();
         });
       } else {
         setState(() {
@@ -151,7 +151,6 @@ class _MypageAddressState extends State<MypageAddress> {
       _addressController.text = address.roadAddress;
       _showResults = false;
     });
-
     FocusScope.of(context).nextFocus();
   }
 
@@ -178,9 +177,7 @@ class _MypageAddressState extends State<MypageAddress> {
 
     final completeAddress =
         detailAddress.isNotEmpty ? '$fullAddress $detailAddress' : fullAddress;
-
     final service = UserAddressService(userKey: _userKey!);
-
     final success = await service.updateAddress(completeAddress);
 
     if (success) {
@@ -199,7 +196,7 @@ class _MypageAddressState extends State<MypageAddress> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double buttonHeight = screenWidth * (83 / 412);
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom; // 키보드 높이
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
       appBar: AppBar(

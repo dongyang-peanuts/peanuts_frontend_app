@@ -84,8 +84,8 @@ class SignupScreen extends StatelessWidget {
     final _ = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(centerTitle: true, title: const Text('회원가입')),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),

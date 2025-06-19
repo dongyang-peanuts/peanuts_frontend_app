@@ -12,7 +12,8 @@ class UserAddressService {
   Future<bool> updateAddress(String address) async {
     final url = Uri.parse('http://kongback.kro.kr:8080/user/address/$userKey');
 
-    final body = jsonEncode({'address': address});
+    final body = address;
+    final textHeaders = {'Content-Type': 'text/plain; charset=utf-8'};
 
     try {
       final response = await http.patch(url, headers: headers, body: body);

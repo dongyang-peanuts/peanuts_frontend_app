@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dangkong_app/providers/signup_provider.dart';
-
 import 'package:dangkong_app/screens/auth/signup_step4.dart';
 
 class SignupStep3 extends ConsumerStatefulWidget {
@@ -19,6 +18,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
   final FocusNode _addressFocusNode = FocusNode();
+  final FocusNode _detailFocusNode = FocusNode();
 
   List<AddressResult> _searchResults = [];
   bool _isSearching = false;
@@ -29,7 +29,8 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
   void initState() {
     super.initState();
     _addressController.addListener(_onAddressChanged);
-    _addressFocusNode.addListener(_onFocusChanged);
+    _addressFocusNode.addListener(_onAddressFocusChanged);
+    _detailFocusNode.addListener(_onDetailFocusChanged);
   }
 
   @override
@@ -38,18 +39,39 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
     _addressController.dispose();
     _detailController.dispose();
     _addressFocusNode.dispose();
+    _detailFocusNode.dispose();
     super.dispose();
   }
 
-  void _onFocusChanged() {
+  void _onAddressFocusChanged() {
     if (!_addressFocusNode.hasFocus) {
       Future.delayed(const Duration(milliseconds: 200), () {
-        if (mounted) {
+        if (mounted && !_detailFocusNode.hasFocus) {
           setState(() {
             _showResults = false;
           });
         }
       });
+    } else {
+      if (_searchResults.isNotEmpty) {
+        setState(() {
+          _showResults = true;
+        });
+      }
+    }
+  }
+
+  void _onDetailFocusChanged() {
+    if (_detailFocusNode.hasFocus) {
+      setState(() {
+        _showResults = false;
+      });
+    } else {
+      if (_addressFocusNode.hasFocus && _searchResults.isNotEmpty) {
+        setState(() {
+          _showResults = true;
+        });
+      }
     }
   }
 
@@ -59,6 +81,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
       setState(() {
         _searchResults.clear();
         _showResults = false;
+        _selectedAddress = '';
       });
       return;
     }
@@ -79,32 +102,35 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://dapi.kakao.com/v2/local/search/keyword.json?query=$query',
+          'https://dapi.kakao.com/v2/local/search/address.json?query=${Uri.encodeQueryComponent(query)}',
         ),
-        headers: {
-          'Authorization': 'KakaoAK 43c5bbef9d62c3193c7287eeae4d2e3e', //카카오키키
-        },
+        headers: {'Authorization': 'KakaoAK 43c5bbef9d62c3193c7287eeae4d2e3e'},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> documents = data['documents'] ?? [];
 
-        setState(() {
-          _searchResults =
-              documents.map((doc) {
-                final roadAddr = doc['road_address_name'] ?? '';
-                final jibunAddr = doc['address_name'] ?? '';
-                final x = double.tryParse(doc['x'] ?? '0') ?? 0.0;
-                final y = double.tryParse(doc['y'] ?? '0') ?? 0.0;
+        final uniqueResults = <String, AddressResult>{};
+        for (var doc in documents) {
+          final roadAddr = doc['road_address']?['address_name'] ?? '';
+          final jibunAddr = doc['address_name'] ?? '';
+          final x = doc['x'];
+          final y = doc['y'];
+          final key = '$x,$y';
 
-                return AddressResult(
-                  roadAddress: roadAddr.isNotEmpty ? roadAddr : jibunAddr,
-                  jibunAddress: jibunAddr,
-                  x: x,
-                  y: y,
-                );
-              }).toList();
+          if (!uniqueResults.containsKey(key)) {
+            uniqueResults[key] = AddressResult(
+              roadAddress: roadAddr.isNotEmpty ? roadAddr : jibunAddr,
+              jibunAddress: jibunAddr,
+              x: double.tryParse(x ?? '0') ?? 0.0,
+              y: double.tryParse(y ?? '0') ?? 0.0,
+            );
+          }
+        }
+
+        setState(() {
+          _searchResults = uniqueResults.values.toList();
         });
       } else {
         setState(() {
@@ -131,7 +157,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
       _showResults = false;
     });
 
-    FocusScope.of(context).nextFocus();
+    FocusScope.of(context).requestFocus(_detailFocusNode);
   }
 
   void _onNextPressed() {
@@ -167,6 +193,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double buttonHeight = screenWidth * (83 / 412);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('이메일로 회원가입'),
@@ -174,9 +201,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        actions: [
-          Padding(padding: const EdgeInsets.only(right: 16.0), child: Center()),
-        ],
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -196,13 +220,11 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                     ),
                   ),
                   const SizedBox(height: 40),
-
                   const Text(
                     '주소',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 12),
-
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey[300]!),
@@ -235,7 +257,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                       ),
                     ),
                   ),
-
                   if (_showResults && _searchResults.isNotEmpty)
                     Expanded(
                       child: Container(
@@ -273,7 +294,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                         ),
                       ),
                     ),
-
                   if (_selectedAddress.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
@@ -291,6 +311,7 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
                       ),
                       child: TextField(
                         controller: _detailController,
+                        focusNode: _detailFocusNode,
                         decoration: InputDecoration(
                           hintText: '상세주소를 입력해주세요.',
                           hintStyle: TextStyle(
@@ -307,7 +328,6 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
               ),
             ),
           ),
-
           Container(
             height: buttonHeight,
             width: double.infinity,
@@ -334,12 +354,11 @@ class _AddressSearchWidgetState extends ConsumerState<SignupStep3> {
   }
 }
 
-// 주소 검색 결과 모델 클래스
 class AddressResult {
   final String roadAddress;
   final String jibunAddress;
-  final double x; // 경도
-  final double y; // 위도
+  final double x;
+  final double y;
 
   AddressResult({
     required this.roadAddress,
