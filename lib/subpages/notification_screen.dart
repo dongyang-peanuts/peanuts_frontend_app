@@ -1,41 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dangkong_app/providers/notification_provider.dart';
+import 'package:dangkong_app/models/notification_item.dart';
+import 'package:intl/intl.dart';
+import 'package:dangkong_app/providers/notification_provider.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends ConsumerWidget {
   const NotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final notifications = [
-      {
-        "title": "욕창 가능성이 높음으로 변경되었습니다.",
-        "subtitle": "자세를 변경하여 욕창을 예방해주세요.",
-        "datetime": "25.04.14 09:46",
-        "highlight": true,
-      },
-      {
-        "title": "낙상 가능성이 높음으로 변경되었습니다.",
-        "subtitle": "자세를 변경하여 욕창을 예방해주세요.",
-        "datetime": "25.04.14 07:30",
-        "highlight": false,
-      },
-      {
-        "title": "낙상이 감지되었습니다.",
-        "subtitle": "서둘러 확인해주세요.",
-        "datetime": "25.04.14 05:03",
-        "image": "assets/images/fall_example.jpg",
-        "highlight": true,
-      },
-      {
-        "title": "낙상이 감지되었습니다.",
-        "subtitle": "서둘러 확인해주세요.",
-        "datetime": "25.04.14 03:44",
-      },
-      {
-        "title": "이상행동이 감지되었습니다.",
-        "subtitle": "서둘러 확인해주세요.",
-        "datetime": "25.04.14 01:30",
-      },
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifications = ref.watch(notificationListProvider);
+    final notifier = ref.read(notificationListProvider.notifier);
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -44,7 +21,7 @@ class NotificationScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: Image.asset(
@@ -54,7 +31,60 @@ class NotificationScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      body: notifications.isEmpty
+          ? const Center(child: Text('📭 알림이 없습니다'))
+          : ListView.builder(
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          final item = notifications[index];
+          final formattedTime = DateFormat('yy.MM.dd\nHH:mm').format(item.timestamp);
 
+          return GestureDetector(
+            onTap: () => notifier.markAsRead(index),
+            child: Container(
+              height: screenHeight * 0.08,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: item.isRead ? Colors.white : const Color(0xFFE7F5D6),
+                border: Border(
+                  bottom: BorderSide(
+                    color: item.isRead ? Colors.grey.shade200 : const Color(0xFFDFF1C6),
+                    width: 1,
+                  ),
+                ),
+              ),
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // 📍 왼쪽: 메시지
+                  Expanded(
+                    child: Text(
+                      item.message,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  // 📍 오른쪽: 날짜 및 시간
+                  Text(
+                    formattedTime,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

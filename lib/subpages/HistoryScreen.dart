@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dangkong_app/providers/notification_provider.dart';
+import 'package:dangkong_app/models/notification_item.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifications = ref.watch(notificationListProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -20,73 +25,78 @@ class HistoryScreen extends StatelessWidget {
           ),
         ),
         centerTitle: false,
-        iconTheme: IconThemeData(color: Colors.black),
-        bottom: PreferredSize(
+        iconTheme: const IconThemeData(color: Colors.black),
+        bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
           child: Divider(height: 1, color: Colors.black),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: notifications.isEmpty
+            ? const Center(child: Text('📭 알림 내역이 없습니다'))
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '2024년 4월 18일',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              _getTodayDate(), // 오늘 날짜 출력
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
-            SizedBox(height: 16),
-            _buildItem('18:02', '경고', '휘청거림이 감지되었습니다.'),
-            _buildItem('18:07', '주의', '배회가 감지되었습니다.'),
-            _buildItem('19:07', '경고', '큰소리가 감지되었습니다.'),
-            _buildItem('19:07', '주의', '손떨림이 감지되었습니다.'),
-            _buildItem('20:07', '비상', '낙상이 감지되었습니다.'),
+            const SizedBox(height: 16),
+            ...notifications.map((item) => _buildItem(item)).toList(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildItem(String time, String type, String message) {
-    Color color;
-    switch (type) {
-      case '비상':
-        color = Colors.red;
-        break;
-      case '경고':
-        color = Colors.orange;
-        break;
-      case '주의':
-        color = Colors.green;
-        break;
-      default:
-        color = Colors.black;
+  // 오늘 날짜 포맷
+  String _getTodayDate() {
+    final now = DateTime.now();
+    return '${now.year}년 ${now.month.toString().padLeft(2, '0')}월 ${now.day.toString().padLeft(2, '0')}일';
+  }
+
+  // 개별 알림 렌더링
+  Widget _buildItem(NotificationItem item) {
+    // 시간
+    final time = item.timestamp.toLocal().toString().substring(11, 16);
+
+    // 타입 구분
+    String type = '알림';
+    Color color = Colors.black;
+
+    if (item.message.contains('낙상')) {
+      type = '비상';
+      color = Colors.red;
+    } else if (item.message.contains('소리') || item.message.contains('휘청')) {
+      type = '경고';
+      color = Colors.orange;
+    } else if (item.message.contains('배회') || item.message.contains('떨림')) {
+      type = '주의';
+      color = Colors.green;
     }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // 줄 맞춤 상단 정렬
         children: [
           Text(
             time,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 25),
           Text(
             '[$type]',
             style: TextStyle(color: color, fontSize: 14),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              message,
-              style: TextStyle(fontSize: 14),
+            child:
+            Text(
+              item.message,
+              style: const TextStyle(fontSize: 14),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

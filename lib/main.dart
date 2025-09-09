@@ -1,54 +1,61 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'ListPage/home_screen.dart';
 import 'ListPage/hospital_screen.dart';
 import 'ListPage/monitoring_screen.dart';
 import 'ListPage/video_screen.dart';
 import 'ListPage/mypage_screen.dart';
+import 'screens/auth/login.dart';
+import 'alert/ alert_listener.dart';
 
-import 'package:dangkong_app/screens/auth/login.dart';
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+Future<void> initializeNotifications() async {
+  const AndroidInitializationSettings androidSettings =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initSettings =
+  InitializationSettings(android: androidSettings);
+
+  await flutterLocalNotificationsPlugin.initialize(initSettings);
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await initializeNotifications();
   await NaverMapSdk.instance.initialize(
     clientId: 'e2yvr541f0',
-    onAuthFailed: (e) {
-      print('네이버맵 인증 실패: $e');
-    },
+    onAuthFailed: (e) => print('네이버맵 인증 실패: $e'),
   );
 
   KakaoSdk.init(nativeAppKey: '3009f310bc7b91b7ddc6c26636dbd41d');
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: AppWithGlobalAlert()));
 }
 
-Future<String?> getAndroidKeyHash() async {
-  const platform = MethodChannel('com.example.app/keyhash');
-  try {
-    final String? keyHash = await platform.invokeMethod('getKeyHash');
-    return keyHash;
-  } on PlatformException catch (e) {
-    print('Failed to get key hash: ${e.message}');
-    return null;
-  }
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AppWithGlobalAlert extends StatelessWidget {
+  const AppWithGlobalAlert({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      home: Stack(
+        children: [
+          const SplashRouter(),
+          const AlertListener(),
+        ],
+      ),
       routes: {
-        '/': (context) => const SplashRouter(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => const BottomNavApp(),
       },
